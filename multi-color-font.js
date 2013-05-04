@@ -50,6 +50,10 @@ ig.Font.inject({
             text = text.toString();
         }
 
+        // copy text and remove color tags
+        var copied_text = text.replace(/\{\#[a-zA-Z0-9]{6}\}/g, '');
+        copied_text = copied_text.replace(/\{\/\}/g, '');
+
         // Multiline?
         if( text.indexOf('\n') !== -1 ) {
             var lines = text.split( '\n' );
@@ -61,10 +65,6 @@ ig.Font.inject({
         }
 
         if( align == ig.Font.ALIGN.RIGHT || align == ig.Font.ALIGN.CENTER ) {
-            // copy text and remove color tags
-            var copied_text = text.replace(/\{\#[a-zA-Z0-9]{6}\}/g, '');
-            copied_text = copied_text.replace(/\{\/\}/g, '');
-
             var width = this._widthForLine( copied_text );
             x -= align == ig.Font.ALIGN.CENTER ? width/2 : width;
         }
@@ -75,23 +75,27 @@ ig.Font.inject({
         }
 
         var wanted_color = color;
-        for( var i = 0; i < text.length; i++ ) {
-
-            if (text.indexOf('{#') == i) {
-                // change color for next word
-                wanted_color = text.substr(i+2,6);
-
-                // remove color data from text
-                text = text.replace(/\{\#[a-zA-Z0-9]{6}\}/, '');
-            }
-
-            if (text.indexOf('{/}') == i) {
+        for( var i = 0; i < copied_text.length; i++ ) {
+            if (text.search(/\{\/\}/) == i) {
                 // change color back
                 wanted_color = color;
 
                 // remove color end tag from text
                 text = text.replace(/\{\/\}/, '');
+
+                // check this letter again
+                i--;
+                continue;
             }
+
+            if (text.search(/\{\#/) == i) {
+                // change color for next word
+                wanted_color = text.substr(i+2, 6);
+
+                // remove color data from text
+                text = text.replace(/\{\#[a-zA-Z0-9]{6}\}/, '');
+            }
+
             var c = text.charCodeAt(i);
             x += this._drawChar( c - this.firstChar, x, y, wanted_color );
         }
