@@ -21,4 +21,23 @@ Then, when drawing text with the font, a color can be passed to the draw functio
 font.draw("Hello World", 0, 0, ig.Font.ALIGN.CENTER, "FF0000")
 ```
 
-If no color is specified, the default color will be used.  That is either the first color in the list you specified or white if no color list was given. 
+If no color is specified, the default color will be used.  That is either the first color in the list you specified or white if no color list was given.
+
+### Changing color inside texts
+
+First, you need to make sure that your font definition includes all the colors you will be using.
+
+Then you can use the following tags to temporarily change text colors:
+
+```
+{#FF0000} as a start tag
+{/} as an end tag
+```
+
+For example, the following code will draw the text in white, with the word `red` in red:
+
+```
+new ig.Font( 'media/fonts/04b03.font_big.png', ["FFFFFF", "FF0000" );
+font.draw("I have white and {#FF0000}red{/} text, yo!", 0, 0, ig.Font.ALIGN.CENTER, 'FFFFFF');
+```
+
